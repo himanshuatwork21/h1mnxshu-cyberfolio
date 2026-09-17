@@ -1,0 +1,12 @@
+<svg width="640" height="360" viewBox="0 0 640 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="640" height="360" fill="#F5CF52"/>
+  <rect x="58" y="54" width="524" height="252" rx="20" fill="#F9F5EE" stroke="#151515" stroke-width="4"/>
+  <path d="M121 149H519" stroke="#151515" stroke-width="6" stroke-linecap="round"/>
+  <path d="M121 191H420" stroke="#151515" stroke-width="6" stroke-linecap="round"/>
+  <path d="M121 233H462" stroke="#151515" stroke-width="6" stroke-linecap="round"/>
+  <rect x="120" y="95" width="96" height="32" rx="8" fill="#151515"/>
+  <path d="M136 111H196" stroke="#F5CF52" stroke-width="8" stroke-linecap="round"/>
+  <circle cx="468" cy="148" r="40" fill="#151515"/>
+  <path d="M444 149L462 167L490 123" stroke="#F5CF52" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="120" y="282" fill="#151515" font-family="monospace" font-size="28" font-weight="700">CYBERSECURITY</text>
+</svg>
