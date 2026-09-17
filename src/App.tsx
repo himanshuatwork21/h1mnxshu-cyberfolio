@@ -379,6 +379,34 @@ function App() {
   const [trackIndex, setTrackIndex] =
     useState(0);
 
+  const [musicTracks, setMusicTracks] =
+    useState([
+      {
+        title: 'midnight coding / pulse 01',
+        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+      },
+      {
+        title: 'quiet focus / pulse 02',
+        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
+      },
+      {
+        title: 'deep work / pulse 03',
+        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
+      },
+      {
+        title: 'late night / pulse 04',
+        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',
+      },
+      {
+        title: 'steady build / pulse 05',
+        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3',
+      },
+      {
+        title: 'calm loop / pulse 08',
+        src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3',
+      },
+    ]);
+
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const [lightbox, setLightbox] =
@@ -399,7 +427,6 @@ function App() {
   ------------------------------------------------------- */
 
   const typedHero = useTypewriterLine([
-    'ML Systems Builder',
     'Zero-Day Hunter',
     'AI Security',
     'Threat Lab Engineer',
@@ -407,20 +434,43 @@ function App() {
 
   const resumeUrl = '/resume.pdf';
 
-  const jazzTracks = [
-    {
-      title: 'soundhelix / calm pulse',
-      src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-    },
-    {
-      title: 'soundhelix / low drift',
-      src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',
-    },
-    {
-      title: 'soundhelix / midnight code',
-      src: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',
-    },
-  ];
+  useEffect(() => {
+    const clientId = import.meta.env.VITE_JAMENDO_CLIENT_ID;
+
+    if (!clientId) {
+      return;
+    }
+
+    const loadJamendoTracks = async () => {
+      try {
+        const response = await fetch(
+          `https://api.jamendo.com/v3.0/tracks/?client_id=${clientId}&format=json&limit=8&tags=ambient,study,focus,lofi,deepwork&order=popularity_total&groupby=artist_id`
+        );
+
+        if (!response.ok) {
+          return;
+        }
+
+        const data = await response.json();
+        const tracks = Array.isArray(data?.tracks) ? data.tracks : [];
+
+        const validTracks = tracks
+          .map((track: any) => ({
+            title: `${track.artist_name || 'jamendo'} / ${track.name || 'focus mix'}`,
+            src: track.audio || track.audio_full || track.mp3 || '',
+          }))
+          .filter((track: { src: string }) => Boolean(track.src));
+
+        if (validTracks.length > 0) {
+          setMusicTracks(validTracks.slice(0, 8));
+        }
+      } catch {
+        // keep the fallback tracks if Jamendo is unavailable
+      }
+    };
+
+    loadJamendoTracks();
+  }, []);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -1983,7 +2033,7 @@ function App() {
 
         <audio
           ref={audioRef}
-          src={jazzTracks[trackIndex].src}
+          src={musicTracks[trackIndex]?.src || musicTracks[0]?.src}
           preload="none"
         />
 
@@ -1994,7 +2044,7 @@ function App() {
             setPlaying(!playing)
           }
           aria-label={
-            playing ? 'Pause jazz' : 'Play jazz'
+            playing ? 'Pause music' : 'Play music'
           }
         >
 
@@ -2015,8 +2065,8 @@ function App() {
 
           <b>
             {playing
-              ? jazzTracks[trackIndex].title
-              : 'soundhelix focus'}
+              ? musicTracks[trackIndex]?.title || 'focus mix'
+              : 'late-night focus'}
           </b>
 
         </span>
@@ -2028,7 +2078,7 @@ function App() {
           onClick={() =>
             setMuted(!muted)
           }
-          aria-label={muted ? 'Unmute jazz' : 'Mute jazz'}
+          aria-label={muted ? 'Unmute music' : 'Mute music'}
         >
           {muted ? (
             <VolumeX size={13} />
@@ -2045,11 +2095,11 @@ function App() {
             setTrackIndex(
               (current) =>
                 (current + 1) %
-                jazzTracks.length
+                musicTracks.length
             );
             setPlaying(true);
           }}
-          aria-label="Next jazz track"
+          aria-label="Next music track"
         >
           <SkipForward size={13} />
         </button>
